@@ -9,13 +9,13 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
- 
+
 
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wt8oomr.mongodb.net/?retryWrites=true&w=majority`;
 
- 
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -33,13 +33,67 @@ async function run() {
 
     const toyCollection = client.db('toyDB').collection('toy')
 
-    app.post('/toys', async(req,res)=>{
+    // Creating index on two fields
+    const indexKeys = {
+      toyName: 1,
+      subCategory: 1
+    }; // Replace field1 and field2 with your actual field names
+    const indexOptions = { name: "toyNameSubCategory" }; // Replace index_name with the desired index name
+    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+    // console.log(result);
+
+
+ 
+
+    // search done here
+    app.get('/getToyByText/:text', async (req, res) => {
+      const searchText = req.params.text;
+
+      const result = await toyCollection.find({
+        $or: [
+          { toyName: { $regex: searchText, $options: "i" } },
+          {
+            subCategory: { $regex: searchText, $options: "i" }
+          }
+        ],
+      })
+        .toArray();
+      res.send(result);
+    })
+
+
+
+
+    // read the data 
+    app.get('/allToys', async (req, res) => {
+      const result = await toyCollection.find({}).toArray();
+      res.json(result);
+    })
+
+    // add the data
+    app.post('/addToys', async (req, res) => {
       const newToy = req.body;
       console.log(newToy);
       const result = await toyCollection.insertOne(newToy);
       res.send(result)
     })
- 
+
+
+    // my toys data
+    app.get('/myToys/:email', async (req, res) => {
+      console.log(req.params.email);
+      const result = await toyCollection.find({ email: req.params.email }).toArray();
+      res.json(result);
+      // console.log(req.query.email);
+      // let query = {};
+      // if (req.query?.email) {
+      //   query = { email: req.query.email }
+      // }
+
+      // const result = await toyCollection.find(query).toArray()
+      // res.send(result);
+    })
+
 
 
 
@@ -56,9 +110,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Users Management server is running')
+  res.send('toy Management server is running')
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on PORT: ${port}`)
+  console.log(`Server is running on PORT: ${port}`)
 })
