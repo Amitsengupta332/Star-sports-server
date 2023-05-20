@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -36,9 +36,9 @@ async function run() {
     // Creating index on two fields
     const indexKeys = {
       toyName: 1,
-      subCategory: 1
+      // subCategory: 1
     }; // Replace field1 and field2 with your actual field names
-    const indexOptions = { name: "toyNameSubCategory" }; // Replace index_name with the desired index name
+    const indexOptions = { name: "toyName" }; // Replace index_name with the desired index name
     const result = await toyCollection.createIndex(indexKeys, indexOptions);
     // console.log(result);
 
@@ -52,9 +52,9 @@ async function run() {
       const result = await toyCollection.find({
         $or: [
           { toyName: { $regex: searchText, $options: "i" } },
-          {
-            subCategory: { $regex: searchText, $options: "i" }
-          }
+          // {
+          //   subCategory: { $regex: searchText, $options: "i" }
+          // }
         ],
       })
         .toArray();
@@ -68,6 +68,23 @@ async function run() {
     app.get('/allToys', async (req, res) => {
       const result = await toyCollection.find({}).toArray();
       res.json(result);
+    })
+
+    // specific view details
+    app.get('/viewDetails/:id', async(req,res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+
+      const options = {
+       
+        // Include only the `title` and `imdb` fields in each returned document
+        projection: {   customerName: 1, toyName: 1, picture: 1, price:1,rating:1, description: 1, quantity: 1, email: 1   },
+      };
+
+
+      const result = await toyCollection.findOne(query, options);
+      console.log(result);
+      res.send(result)
     })
 
     // add the data
