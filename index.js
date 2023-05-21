@@ -105,6 +105,76 @@ async function run() {
       res.send(result)
     })
 
+    // category 
+
+    // app.get('/category/:subCategory', async (req, res) => {
+    //   console.log(req.params.subCategory);
+    //   const result = await toyCollection.find({ subCategory: req.params.subCategory }).toArray();
+    //   res.json(result);
+
+    // })
+
+    // app.get('/shopCategory/:subCategory', async(req, res) =>{
+    //   if(req.params.subCategory == 'Football' || 
+    //   req.params.subCategory == 'Cricket' 
+    //   || req.params.subCategory == 'Badminton'
+    //   ){
+    //     const result = await toyCollection.find({})
+    //   }
+    // })
+
+
+    app.get('shopCategory/:text', async(req,res)=>{
+      const text = req.params.text;
+      console.log(text);
+      if(req.params.text == 'Football' ||
+        req.params.text == 'Cricket' ||
+        req.params.text == 'Badminton'
+      
+      ){
+        const result = await toyCollection.find({subCategory: req.params.text}).toArray();
+        // return res.send(result)
+        return res.send(result)
+      }
+    })
+
+    // app.get('/shopCategory/:text', async (req, res) => {
+    //   // Check if the req.params.text matches the specific subcategories
+    //   if (
+    //     req.params.text === 'Football' ||
+    //     req.params.text === 'Cricket' ||
+    //     req.params.text === 'Badminton'
+    //   ) {
+    //     const result = await toyCollection.find({ subCategory: req.params.text }).toArray();
+    //     return res.send(result);
+    //   }
+    // });
+    
+
+
+
+    // app.get('/shopCategory/:subCategory', async (req, res) => {
+    //   const subCategory = req.params.subCategory;
+    
+    //   if (subCategory === 'Football' ||
+    //       subCategory === 'Cricket' ||
+    //       subCategory === 'Badminton') {
+    //     try {
+    //       const result = await toyCollection.find({ subCategory: subCategory }).toArray();
+    //       res.json(result);
+    //     } catch (error) {
+    //       console.error('Error fetching data:', error);
+    //       res.status(500).json({ error: 'An error occurred while fetching data' });
+    //     }
+    //   } else {
+    //     res.status(400).json({ error: 'Invalid subcategory' });
+    //   }
+    // });
+    
+
+
+    // category end 
+
     // add the data
     app.post('/addToys', async (req, res) => {
       const newToy = req.body;
