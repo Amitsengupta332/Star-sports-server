@@ -43,7 +43,7 @@ async function run() {
     // console.log(result);
 
 
- 
+
 
     // search done here
     app.get('/getToyByText/:text', async (req, res) => {
@@ -71,21 +71,31 @@ async function run() {
     })
 
     // specific view details
-    app.get('/viewDetails/:id', async(req,res) =>{
+    app.get('/viewDetails/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
 
       const options = {
-       
+
         // Include only the `title` and `imdb` fields in each returned document
-        projection: {   customerName: 1, toyName: 1, picture: 1, price:1,rating:1, description: 1, quantity: 1, email: 1   },
+        projection: { customerName: 1, toyName: 1, picture: 1, price: 1, rating: 1, description: 1, quantity: 1, email: 1 },
       };
 
 
       const result = await toyCollection.findOne(query, options);
-      console.log(result);
+      // console.log(result);
       res.send(result)
     })
+
+    // my toys data
+    app.get('/myToys/:email', async (req, res) => {
+      console.log(req.params.email);
+      const result = await toyCollection.find({ email: req.params.email }).toArray();
+      res.json(result);
+
+    })
+
+    // updated toy
 
     // add the data
     app.post('/addToys', async (req, res) => {
@@ -95,21 +105,18 @@ async function run() {
       res.send(result)
     })
 
+    // delete mytoy
 
-    // my toys data
-    app.get('/myToys/:email', async (req, res) => {
-      console.log(req.params.email);
-      const result = await toyCollection.find({ email: req.params.email }).toArray();
-      res.json(result);
-      // console.log(req.query.email);
-      // let query = {};
-      // if (req.query?.email) {
-      //   query = { email: req.query.email }
-      // }
-
-      // const result = await toyCollection.find(query).toArray()
-      // res.send(result);
+    app.delete('/deleteToys/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await toyCollection.deleteOne(query);
+      console.log(result);
+      res.send(result)
     })
+
+
+
 
 
 
