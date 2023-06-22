@@ -29,18 +29,18 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const toyCollection = client.db('toyDB').collection('toy')
 
     // Creating index on two fields
-    const indexKeys = {
-      toyName: 1,
-      // subCategory: 1
-    }; // Replace field1 and field2 with your actual field names
-    const indexOptions = { name: "toyName" }; // Replace index_name with the desired index name
-    const result = await toyCollection.createIndex(indexKeys, indexOptions);
-    // console.log(result);
+    // const indexKeys = {
+    //   toyName: 1,
+    //   // subCategory: 1
+    // }; // Replace field1 and field2 with your actual field names
+    // const indexOptions = { name: "toyName" }; // Replace index_name with the desired index name
+    // const result = await toyCollection.createIndex(indexKeys, indexOptions);
+    // // console.log(result);
 
 
 
@@ -107,12 +107,12 @@ async function run() {
 
     // category 
 
-    // app.get('/category/:subCategory', async (req, res) => {
-    //   console.log(req.params.subCategory);
-    //   const result = await toyCollection.find({ subCategory: req.params.subCategory }).toArray();
-    //   res.json(result);
+    app.get('/category/:subCategory', async (req, res) => {
+      console.log(req.params.subCategory);
+      const result = await toyCollection.find({ subCategory: req.params.subCategory }).toArray();
+      res.json(result);
 
-    // })
+    })
 
     // app.get('/shopCategory/:subCategory', async(req, res) =>{
     //   if(req.params.subCategory == 'Football' || 
@@ -217,10 +217,8 @@ async function run() {
 
 
 
-
-
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
